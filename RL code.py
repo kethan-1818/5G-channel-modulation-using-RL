@@ -2,6 +2,8 @@
 """
 
 @author: KETHAN
+
+install gym,stable_baselines3 from prompt before executing the code.
 """
 
 import gym
