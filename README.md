@@ -8,3 +8,4 @@ By utilizing OpenAI Gym, I could define the observation space, action space, and
 To facilitate learning, I designed a reward structure that reflects the objectives of the 5G system. For example, the agent might receive positive rewards for achieving high data rates, low latency, or efficient spectrum utilization. Conversely, negative rewards may be assigned for excessive interference, dropped connections, or violations of quality-of-service requirements.
 
 Through the combination of OpenAI Gym and my custom environment, I have created a platform where reinforcement learning algorithms can be trained to optimize the performance of 5G wireless communication channels. This framework holds great potential for developing intelligent algorithms that adapt and improve 5G network performance in dynamic and challenging environments, ultimately contributing to the advancement of wireless communication technologies.
+//    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
