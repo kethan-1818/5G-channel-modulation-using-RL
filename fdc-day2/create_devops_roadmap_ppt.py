@@ -147,105 +147,21 @@ def _fill_shape_text(shape, text, size, color, bold=True, align=PP_ALIGN.LEFT):
 
 
 def slide_infographic(prs):
-    """Slide 2 — clean 4×3 numbered roadmap (native shapes + colored logos)."""
+    """Slide 2 — approved on-the-road DevOps map (screenshot this)."""
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     set_slide_bg(slide, LIGHT_BG)
-    add_rect(slide, Inches(0), Inches(0), Inches(13.333), Inches(0.07), CYAN)
-
-    add_textbox(slide, Inches(0.32), Inches(0.14), Inches(8), Inches(0.48),
-                "DevOps Roadmap", size=28, color=INK, bold=True)
-    add_textbox(slide, Inches(0.32), Inches(0.54), Inches(9.5), Inches(0.28),
-                "Beginner’s Guide to Cloud Automation  ·  Friday Deployment Club  ·  Day 2",
-                size=11, color=MUTED)
-
-    legend = [(P1, "Foundations"), (P2, "Containers & CI/CD"), (P3, "Cloud"),
-              (P4, "Infra & Orchestration"), (P5, "Security & Monitoring")]
-    lx = 0.32
-    for color, label in legend:
-        add_rect(slide, Inches(lx), Inches(0.88), Inches(0.18), Inches(0.14), color, radius=True)
-        add_textbox(slide, Inches(lx + 0.22), Inches(0.84), Inches(2.1), Inches(0.22),
-                    label, size=10, color=MUTED, bold=True)
-        lx += 2.35
-
-    stops = [
-        (0, 0, "01", "Foundations", "Linux · Bash · Git", ["linux", "bash", "git"], P1),
-        (0, 1, "02", "Source Control", "Branches · PRs · Reviews", ["git", "github"], P1),
-        (0, 2, "03", "Containerization", "Docker & Images", ["docker"], P2),
-        (0, 3, "04", "CI / CD", "Jenkins · GitHub Actions", ["jenkins", "githubactions"], P2),
-        (1, 0, "05", "Cloud Platforms", "EC2 · VPC · IAM · S3 · ECS/EKS",
-         ["amazonaws", "googlecloud", "microsoftazure"], P3),
-        (1, 1, "06", "Infrastructure as Code", "Terraform · CloudFormation",
-         ["terraform", "cloudformation"], P4),
-        (1, 2, "07", "Config & Automation", "Ansible · AWS SSM", ["ansible"], P4),
-        (1, 3, "08", "Kubernetes", "K8s · Helm", ["kubernetes", "helm"], P4),
-        (2, 0, "09", "Security", "IAM · Scanning · Secrets", ["security"], P5),
-        (2, 1, "10", "Observability", "Prometheus · Grafana · Logs", ["prometheus", "grafana"], P5),
-        (2, 2, "11", "GitOps", "ArgoCD · Flux", ["argocd", "flux", "git"], P5),
-    ]
-
-    mx, top = 0.30, 1.12
-    gapx, gapy = 0.18, 0.16
-    cols, rows = 4, 3
-    footer_h = 0.52
-    cw = (13.333 - 2 * mx - (cols - 1) * gapx) / cols
-    ch = (7.5 - top - footer_h - 0.08 - (rows - 1) * gapy) / rows
-
-    def pos(r, c):
-        return mx + c * (cw + gapx), top + r * (ch + gapy)
-
-    # arrows between cards in each row
-    for r in range(3):
-        n_in_row = 4 if r < 2 else 3
-        for c in range(n_in_row - 1 if r < 2 else 3):
-            x, y = pos(r, c)
-            ax = x + cw + 0.02
-            ay = y + ch / 2 - 0.08
-            chev = slide.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, Inches(ax), Inches(ay),
-                                          Inches(gapx - 0.04), Inches(0.16))
-            chev.fill.solid()
-            chev.fill.fore_color.rgb = RGBColor(0xB8, 0xC0, 0xCC)
-            chev.line.fill.background()
-
-    for r, c, num, title, subtitle, logos, accent in stops:
-        x, y = pos(r, c)
-        card = add_rect(slide, Inches(x), Inches(y), Inches(cw), Inches(ch), WHITE, CARD_LN, radius=True)
-        bar = add_rect(slide, Inches(x), Inches(y), Inches(0.10), Inches(ch), accent, radius=True)
-        badge = add_rect(slide, Inches(x + 0.18), Inches(y + 0.12), Inches(0.48), Inches(0.28),
-                         accent, radius=True)
-        _fill_shape_text(badge, num, 11, WHITE, True, PP_ALIGN.CENTER)
-        add_textbox(slide, Inches(x + 0.72), Inches(y + 0.10), Inches(cw - 0.85), Inches(0.32),
-                    title, size=13, color=INK, bold=True)
-        add_textbox(slide, Inches(x + 0.72), Inches(y + 0.38), Inches(cw - 0.85), Inches(0.26),
-                    subtitle, size=10, color=MUTED)
-
-        n = len(logos)
-        icon = 0.40
-        spacing = 0.10
-        total = n * icon + (n - 1) * spacing
-        start = x + (cw - total) / 2
-        iy = y + 0.70
-        for i, name in enumerate(logos):
-            path = logo(name)
-            if path:
-                slide.shapes.add_picture(str(path), Inches(start + i * (icon + spacing)),
-                                         Inches(iy), Inches(icon), Inches(icon))
-
-    # Goal card
-    x, y = pos(2, 3)
-    add_rect(slide, Inches(x), Inches(y), Inches(cw), Inches(ch), NAVY, radius=True)
-    add_rect(slide, Inches(x), Inches(y), Inches(0.10), Inches(ch), GOAL_C, radius=True)
-    add_textbox(slide, Inches(x + 0.22), Inches(y + 0.12), Inches(cw - 0.35), Inches(0.26),
-                "GOAL", size=11, color=GOAL_C, bold=True)
-    for i, word in enumerate(["Build", "Automate", "Monitor", "Deploy"]):
-        add_textbox(slide, Inches(x + 0.22), Inches(y + 0.40 + i * 0.32),
-                    Inches(cw - 0.35), Inches(0.32), word, size=16, color=WHITE, bold=True)
-
-    # footer
-    add_rect(slide, Inches(0.30), Inches(7.02), Inches(12.73), Inches(0.38), NAVY, radius=True)
-    add_textbox(slide, Inches(0.45), Inches(7.05), Inches(8.5), Inches(0.32),
-                "Build   ·   Automate   ·   Monitor   ·   Deploy", size=13, color=WHITE, bold=True)
-    add_textbox(slide, Inches(9.6), Inches(7.05), Inches(3.2), Inches(0.32),
-                "Kethan Gummalla", size=11, color=GRAY, align=PP_ALIGN.RIGHT)
+    if INFOGRAPHIC.exists():
+        slide.shapes.add_picture(
+            str(INFOGRAPHIC),
+            Inches(0), Inches(0),
+            Inches(13.333), Inches(7.5),
+        )
+    else:
+        add_textbox(
+            slide, Inches(0.6), Inches(3), Inches(12), Inches(1),
+            "Roadmap image missing — run generate_roadmap_infographic.py",
+            size=18, color=GRAY, align=PP_ALIGN.CENTER,
+        )
 
 
 def slide_title(prs):
