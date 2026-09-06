@@ -11,6 +11,7 @@ from pptx.oxml.ns import qn
 from pptx.oxml import parse_xml
 
 ASSETS = Path(__file__).parent / "assets" / "logos"
+INFOGRAPHIC = Path(__file__).parent / "assets" / "devops_roadmap_infographic.png"
 OUTPUT = Path(__file__).parent / "FDC_Day2_DevOps_Roadmap.pptx"
 
 # ── Palette ──────────────────────────────────────────────────────────────────
@@ -116,6 +117,19 @@ def slide_header(slide, stop_num: str, title: str, subtitle: str, accent: RGBCol
                 title, size=32, color=WHITE, bold=True)
     add_textbox(slide, Inches(0.6), Inches(1.05), Inches(11.5), Inches(0.5),
                 subtitle, size=16, color=GRAY)
+
+
+def slide_infographic(prs):
+    """Full-bleed winding-road roadmap (screenshot this)."""
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+    set_slide_bg(slide, WHITE)
+    if INFOGRAPHIC.exists():
+        slide.shapes.add_picture(str(INFOGRAPHIC), Inches(0), Inches(0),
+                                 Inches(13.333), Inches(7.5))
+    else:
+        add_textbox(slide, Inches(0.6), Inches(3), Inches(12), Inches(1),
+                    "Roadmap infographic missing — run generate_roadmap_infographic.py",
+                    size=18, color=GRAY, align=PP_ALIGN.CENTER)
 
 
 def slide_title(prs):
@@ -272,7 +286,8 @@ def slide_cloud(prs):
     set_slide_bg(slide)
     slide_header(slide, "STOP 5", "Cloud Platforms — AWS", "Core services every DevOps engineer needs", SECTION_COLORS["cloud"])
 
-    add_tool_icon(slide, Inches(0.8), Inches(1.75), "amazonaws", "AWS", icon_size=Inches(0.8))
+    add_tool_row(slide, [("amazonaws", "AWS"), ("googlecloud", "GCP"), ("microsoftazure", "Azure")],
+                Inches(1.7), x_start=Inches(8.4), spacing=Inches(1.4))
 
     services = [
         ("EC2", "Virtual Machines"),
@@ -463,9 +478,9 @@ def slide_series_map(prs):
         (4, "CI / CD", "Jenkins · GH Actions", SECTION_COLORS["containers"],
          [("jenkins", ""), ("githubactions", "")]),
         (5, "Cloud — AWS", "EC2 · VPC · IAM · S3 · ECS · EKS", SECTION_COLORS["cloud"],
-         [("amazonaws", "")]),
+         [("amazonaws", ""), ("googlecloud", ""), ("microsoftazure", "")]),
         (6, "Infrastructure as Code", "Terraform · CloudFormation", SECTION_COLORS["infra"],
-         [("terraform", ""), ("amazonaws", "")]),
+         [("terraform", ""), ("cloudformation", "")]),
         (7, "Config & Automation", "Ansible · AWS SSM", SECTION_COLORS["infra"],
          [("ansible", ""), ("amazonaws", "")]),
         (8, "Kubernetes & Helm", "Scale · Manage · Deploy", SECTION_COLORS["infra"],
@@ -515,8 +530,9 @@ def build():
     prs.slide_height = Inches(7.5)
 
     slide_title(prs)
+    slide_infographic(prs)          # winding-road visual (screenshot this)
     slide_roadmap_overview(prs)
-    slide_series_map(prs)          # screenshot-friendly full roadmap
+    slide_series_map(prs)
     slide_foundations(prs)
     slide_source_control(prs)
     slide_containerization(prs)
